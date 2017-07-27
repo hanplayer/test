@@ -44,14 +44,30 @@ int BitMultiplyNum(struct A &first,char &second,char *result,short &len)
 
 int NumMultiplyNum(struct A &first,struct A &second,struct A result)
 {
-	
+	struct A sum;
+	memset(sum.value,0,126);
+	sum.len = 0;
+	sum.dec_len = 0;
 	for(int i = 0;i < second.len;i++)
 	{
+		struct A op;//操作数
 		char tmp[126];
 		short len;
 		BitMultiplyNum(first,second.value[i],tmp,len);
+		format(tmp,len,i,op);
+		Switch(sum,op);
+		CompleteZero(sum,op);
 		
 	}
+	
+	return 0;
+}
+//格式化函数
+int format(const char *p,short length,short dec_len,struct A &result)
+{
+	result.len = length;
+	memcpy(result.value,p,length);
+	result.dec_len = dec_len;
 	return 0;
 }
 //dec 十进制的进位 位和位相加

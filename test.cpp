@@ -10,12 +10,8 @@ struct A
 	unsigned short dec_len;
 	
 };
-int Switch(struct A &first,struct A &second);
-int format(const char *p,short length,short dec_len,struct A &result);
-int CompleteZero(struct A &first,struct A &second);
-int NumPlusNum(struct A first,struct A second,struct A &result);
 
-int BitMultiplyBit(char& first,char& second,char& bit,char& carry)
+int BitMultiplyBit(const char& first,const char& second,char& bit,char& carry)
 {
 	char num;
 	num = (first)*(second) + carry;
@@ -24,34 +20,40 @@ int BitMultiplyBit(char& first,char& second,char& bit,char& carry)
 	return 0;
 }
 //len = 长度
-int BitMultiplyNum(struct A &first,char &second,char *result,short &len)
+int BitMultiplyNum(const char *first,char &second,char *result,const short &first_len,short &result_len)
 {
 	char carry = 0;
 	char bit = 0;
-	for(int i = 0;i < first.len;i++)
+	for(int i = 0;i < first_len;i++)
 	{
-		BitMultiplyBit( first.value[i],second,bit,carry );
+		BitMultiplyBit( first[i],second,bit,carry );
 		result[i] = bit;
 	}
 	if(carry!=0)
 	{
-		result[first.len] = carry;
-		len = first.len + 1;
+		result[first_len] = carry;
+		result_len = first_len + 1;
 	}
 	else
 	{
-		len = first.len;
+		result_len = first_len;
 	}
 	return 0;
 }
-
-int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
+//num即为添加0的个数
+int AppendZero(char *input,short len,short num)
 {
-	struct A sum;
-	memset(sum.value,0,126);
-	sum.len = 0;
-	sum.dec_len = 0;
-#if 1
+	char tmp[126];
+	memset(tmp,0,126);
+	memcpy(tmp+num,input,len);
+	memcpy(input,tmp,len+num);
+	return 0;
+}
+int NumMultiplyNum(char *first,char *second,char *result,short first_len,short second_len,short &result_len)
+{
+	char sum[126];
+	memset(sum,0,126);
+#if 0
 		printf("-----sum begin:----\n");
 		for(short j = 0;j < 126 ;j++)
 		{
@@ -61,13 +63,12 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 		printf("sum.len = %d\n",sum.len);
 		printf("sum.dec_len = %d\n",sum.dec_len);
 #endif
-	result.dec_len = first.dec_len + second.dec_len;
-	for(int i = 0;i < second.len;i++)
+	for(int i = 0;i < second_len;i++)
 	{
 		struct A op;//操作数
 		char tmp[126];
 		short len;
-		BitMultiplyNum(first,second.value[i],tmp,len);
+		BitMultiplyNum(first,second[i],tmp,first_len,len);
 #if 0
 		printf("----tmp----\n");
 		for(short j = 0;j < len ;j++)
@@ -76,7 +77,7 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 		}
 		printf("\n");
 #endif
-		format(tmp,len,i,op);
+		AppendZero(tmp,len,i);
 #if 0
 		printf("-----op----\n");
 		for(short j = 0;j < len ;j++)
@@ -97,7 +98,6 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 		printf("sum.len = %d\n",sum.len);
 		printf("sum.dec_len = %d\n",sum.dec_len);
 #endif
-		Switch(sum,op);
 #if 0
 		printf("-----sum3----\n");
 		for(short j = 0;j < sum.len ;j++)
@@ -108,7 +108,6 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 		printf("sum.len = %d\n",sum.len);
 		printf("sum.dec_len = %d\n",sum.dec_len);
 #endif
-		CompleteZero(sum,op);
 #if 0
 		printf("-----op----\n");
 		for(short j = 0;j < op.len ;j++)
@@ -130,7 +129,7 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 		printf("sum.dec_len = %d\n",sum.dec_len);
 #endif
 
-		NumPlusNum(sum,op,result);
+		NumPlusNum(char *first,char *second,char *result,const short fir_len,const short& sec_len,short& result_len);
 		sum = result;
 #if 0
 		printf("---------\n");
@@ -146,14 +145,7 @@ int NumMultiplyNum(struct A &first,struct A &second,struct A &result)
 	
 	return 0;
 }
-//格式化函数
-int format(const char *p,short length,short dec_len,struct A &result)
-{
-	result.len = length;
-	memcpy(result.value,p,length);
-	result.dec_len = dec_len;
-	return 0;
-}
+
 //dec 十进制的进位 位和位相加
 int BitPlusBit(char& first,char& second,char& bit,char& carry)
 {
@@ -162,29 +154,29 @@ int BitPlusBit(char& first,char& second,char& bit,char& carry)
 	carry = num/10;
 	return 0;
 }
-int NumPlusNum(struct A first,struct A second,struct A &result)
+int NumPlusNum(char *first,char *second,char *result,const short fir_len,const short& sec_len,short& result_len)
 {
-	short len = first.len;
+	short len;
+	len = (fir_len>=sec_len)?fir_len:sec_len;
 	char carry = 0;
 	char bit = 0;
 	short i;
-	memset(result.value,0,126);
+	memset(result,0,126);
 	for(i = 0;i < len; i++)
 	{
-		BitPlusBit(first.value[i],second.value[i],bit,carry);
-		result.value[i] = bit;
+		BitPlusBit(first[i],second[i],bit,carry);
+		result[i] = bit;
 	}
 	if(carry != 0)
 	{
-		result.value[i] = carry;
-		result.len = len + 1;
+		result[i] = carry;
+		result_len = len + 1;
 	}
 	else
 	{
-		result.len = len;
+		result_len = len;
 	}
-	result.dec_len = first.dec_len;
-#if 1
+#if 0
 		printf("----result----\n");
 		for(short j = 0;j < 126;j++)
 		{
@@ -198,109 +190,6 @@ int NumPlusNum(struct A first,struct A second,struct A &result)
 
 	return 0;
 }
-
-
-//将dec_len小的放到前面
-int Switch(struct A &first,struct A &second)
-{
-	struct A tmp;
-	if(first.dec_len > second.dec_len)
-	{
-		tmp = second;
-		second = first;
-		first = tmp;
-	}
-	return 0;
-}
-//补全各位的0
-int CompleteZero(struct A &first,struct A &second)
-{
-	short AppendLen = second.dec_len - first.dec_len;
-	char sec_op[126];
-	char fir_op[126];
-	memset(fir_op,0,126);
-	memset(sec_op,0,126);
-	for(int i = 0; i < AppendLen;i++)
-	{
-		sec_op[i] = 0;
-	}
-	short first_len,second_len;
-	second_len = AppendLen + second.len;
-	first_len = first.len;
-	short differ = first_len - second_len;
-	for(int j = 0;j < second.len;j++)
-	{
-		sec_op[j+AppendLen] = second.value[j];
-	}
-	memcpy(fir_op,first.value,first.len);//????
-#if 0
-		printf("-----first----\n");
-		for(short j = 0;j < 126;j++)
-		{
-			printf("%d ",first.value[j]);
-		}
-		printf("\n");
-#endif
-#if 0
-		printf("-----fir_op----\n");
-		for(short j = 0;j < 126;j++)
-		{
-			printf("%d ",fir_op[j]);
-		}
-		printf("\n");
-#endif
-	if( differ > 0 )
-	{	
-		for(int i = 0;i < differ ; i++  )
-		{
-			sec_op[i+AppendLen+second.len] = 0;
-		}
-	}
-	else if( differ < 0 )
-	{
-		for( int i = 0 ;i < differ; i++ )
-		{
-			fir_op[i+first.len] = 0;
-		}
-	}
-	memcpy(first.value,fir_op,126);
-	memcpy(second.value,sec_op,126);
-#if 1
-		printf("-----one----\n");
-		for(short j = 0;j < 126;j++)
-		{
-			printf("%d ",first.value[j]);
-		}
-		printf("\n");
-		printf("first.len:%d\n",first.len);
-		printf("first.dec_len:%d\n",first.dec_len);
-		
-#endif
-#if 1
-		printf("-----second----\n");
-		for(short j = 0;j < 126;j++)
-		{
-			printf("%d ",second.value[j]);
-		}
-		
-		printf("\n");
-		printf("second.len:%d\n",second.len);
-		printf("second.dec_len:%d\n",second.dec_len);
-#endif
-	if(differ < 0)
-	{
-		first.len = second_len;
-		second.len = second_len;
-	}
-	else
-	{
-		first.len = first_len;
-		second.len = first_len;
-	}
-	return 0;
-}
-
-
 
 int main(void)
 {
@@ -379,20 +268,19 @@ int main(void)
 	printf("\n");
 #endif
 #if 1
-	struct A a1,a2,result;
-	a1.value[0] = 1;
-	a1.value[1] = 0;
-	a1.value[2] = 0;
-	a1.value[3] = 0;
-	a1.value[4] = 0;
-	a1.value[5] = 8;
-	a1.value[6] = 9;
-	a1.value[7] = 9;
-	a1.value[8] = 9;
-	a1.value[9] = 9;
+	char a1[126],a2[126],result[126];
+	a1[0] = 1;
+	a1[1] = 0;
+	a1[2] = 0;
+	a1[3] = 0;
+	a1[4] = 0;
+	a1[5] = 8;
+	a1[6] = 9;
+	a1[7] = 9;
+	a1[8] = 9;
+	a1[9] = 9;
 
-	a1.len = 10;
-	a1.dec_len = 1;
+	a1_len = 10;
 
 	a2.value[0] = 1;
 	a2.value[1] = 0;
@@ -406,13 +294,14 @@ int main(void)
 	a2.value[9] = 9;
 
 	a2.len = 10;
-	a2.dec_len = 1;
+        NumMultiplyNum(a1,a2,result,a1_len,a2_len,result_len);
+
 	NumMultiplyNum(a1,a2,result);
-	printf("result.len:%d\n",result.len);
+	printf("result.len:%d\n",result_len);
 	printf("result:\n");
-	for(int i = 0;i < result.len;i++)
+	for(int i = 0;i < result_len;i++)
 	{	
-		printf("%d ",result.value[i]);
+		printf("%d ",result[i]);
 	}
 	printf("\n");
 #endif

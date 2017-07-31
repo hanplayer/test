@@ -228,7 +228,6 @@ int CompleteZero(struct A &first,struct A &second)
 	second_len = AppendLen + second.len;
 	first_len = first.len;
 	short differ = first_len - second_len;
-
 	for(int j = 0;j < second.len;j++)
 	{
 		sec_op[j+AppendLen] = second.value[j];

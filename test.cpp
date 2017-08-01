@@ -10,6 +10,8 @@ struct A
 	unsigned short dec_len;
 	
 };
+int NumPlusNum(char *first,char *second,char *result,const short fir_len,const short& sec_len,short& result_len);
+
 
 int BitMultiplyBit(const char& first,const char& second,char& bit,char& carry)
 {
@@ -53,6 +55,7 @@ int NumMultiplyNum(char *first,char *second,char *result,short first_len,short s
 {
 	char sum[126];
 	memset(sum,0,126);
+	short sum_len = 1;
 #if 0
 		printf("-----sum begin:----\n");
 		for(short j = 0;j < 126 ;j++)
@@ -127,10 +130,10 @@ int NumMultiplyNum(char *first,char *second,char *result,short first_len,short s
 		printf("\n");
 		printf("sum.len = %d\n",sum.len);
 		printf("sum.dec_len = %d\n",sum.dec_len);
-#endif
-
-		NumPlusNum(char *first,char *second,char *result,const short fir_len,const short& sec_len,short& result_len);
-		sum = result;
+#endif		
+		NumPlusNum(sum,tmp,result,sum_len,len+i,result_len);
+		memcpy(sum,result,result_len);
+		sum_len = result_len;
 #if 0
 		printf("---------\n");
 		for(short j = 0;j < result.len ;j++)
@@ -270,7 +273,7 @@ int main(void)
 #if 1
 	char a1[126],a2[126],result[126];
 	a1[0] = 1;
-	a1[1] = 0;
+	a1[1] = 9;
 	a1[2] = 0;
 	a1[3] = 0;
 	a1[4] = 0;
@@ -280,23 +283,23 @@ int main(void)
 	a1[8] = 9;
 	a1[9] = 9;
 
-	a1_len = 10;
+	short a1_len = 10;
 
-	a2.value[0] = 1;
-	a2.value[1] = 0;
-	a2.value[2] = 0;
-	a2.value[3] = 0;
-	a2.value[4] = 0;
-	a2.value[5] = 8;
-	a2.value[6] = 9;
-	a2.value[7] = 9;
-	a2.value[8] = 9;
-	a2.value[9] = 9;
+	a2[0] = 9;
+	a2[1] = 9;
+	a2[2] = 9;
+	a2[3] = 9;
+	a2[4] = 9;
+	a2[5] = 9;
+	a2[6] = 9;
+	a2[7] = 9;
+	a2[8] = 9;
+	a2[9] = 9;
 
-	a2.len = 10;
+	short a2_len = 10;
+	short result_len = 0;
         NumMultiplyNum(a1,a2,result,a1_len,a2_len,result_len);
 
-	NumMultiplyNum(a1,a2,result);
 	printf("result.len:%d\n",result_len);
 	printf("result:\n");
 	for(int i = 0;i < result_len;i++)

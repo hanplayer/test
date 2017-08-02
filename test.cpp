@@ -21,6 +21,55 @@ private:
     Addition adder;
 
 };
+class Analysis
+{
+public:
+    int GetPointPos(char* value,short &pos);
+    int GetPowerDec(short dec,short power,short &result);//幂运算之后的小数位置
+};
+class Formater
+{
+public:
+    int Coverse(char *opra,short len);
+    int Format(char *input,short len,short dec,char *output);
+};
+int Analysis::GetPointPos(char* value,short &pos)
+{
+    for(short i = 0 ;i < 6;i++ )
+    {
+        if(value[i]=='.')
+        {
+            pos = i;
+            return 0;
+        } 
+    }
+}
+
+int Analysis::GetPowerDec(short dec,short power,short &result)
+{
+    result = dec*power;
+    return 0;
+}
+
+int Formater::Coverse(char *opra,short len)
+{
+    char tmp[126];
+    short j = 0;
+    for(short i = len;i > 0;i-- )
+    {
+        tmp[j] = opra[i];
+        j++;
+    }
+    memcpy(opra,tmp,len);
+    return 0;
+}
+
+//dec 小数点的位数
+int Formater::Format(char *input,short len,short dec,char *output)
+{
+    
+    return 0;
+}
 
 int Multiplication::BitMultiplyBit(const char& first,const char& second,char& bit,char& carry)
 {
@@ -78,6 +127,19 @@ int Multiplication::NumMultiplyNum(char *first,char *second,char *result,short f
     }
     return 0;
 }
+/*
+int Multiplication::DeleteZero(char *result,short &result_len)
+{
+    for(short i = result_len;i > 0;i-- )
+    {
+        if(result[result_len - 1] != 0)
+	{
+	    result_len = i;
+            return 0;
+	}
+    }
+}
+*/
 
 //dec 十进制的进位 位和位相加
 int Addition::BitPlusBit(char& first,char& second,char& bit,char& carry)

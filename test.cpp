@@ -30,6 +30,7 @@ public:
 class Formater
 {
 public:
+    int DelHeadZero(char *opra);
     int Coverse(char *opra,short len);
     int Format(char *input,short len,short dec,char *output);
 };
@@ -63,12 +64,36 @@ int Formater::Coverse(char *opra,short len)
     memcpy(opra,tmp,len);
     return 0;
 }
-
+//添加小数点
+int Formater::AddPoint(char *opra,short len,short point_pos)
+{
+    char tmp[126];
+    memset(tmp,0,126);
+    opra[point_pos] = 10;
+    for(short i = 0;;i++)
+    {
+        
+    }
+    return 0;
+}
 //dec 小数点的位数
 int Formater::Format(char *input,short len,short dec,char *output)
-{
-    
+{ 
     return 0;
+}
+
+
+//删除尾部的0
+int Formater::DelEndZero(char *opra,short len)
+{
+    for(short i = len;i > 0;i--)
+    {
+        if(opra[i-1] != 0)
+        {
+            len = i;
+            return 0;
+        }
+    }
 }
 
 int Multiplication::BitMultiplyBit(const char& first,const char& second,char& bit,char& carry)

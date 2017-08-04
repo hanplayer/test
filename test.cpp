@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 using namespace std;
+
 class Addition
 {
 public:
@@ -24,19 +25,22 @@ private:
 class Analysis
 {
 public:
-    int GetPointPos(char* value,short &pos);
+    int GetPointPos(char* value,short &pos,short len);
     int GetPowerDec(short dec,short power,short &result);//幂运算之后的小数位置
+    int TailZeroDelOrNot(char *value,short len);//判断是否需要删除末尾0
 };
 class Formater
 {
 public:
     int DelHeadZero(char *opra);
+    int DelEndZero(char *opra,short len);
     int Coverse(char *opra,short len);
-    int Format(char *input,short len,short dec,char *output);
+    int AddPoint(char *opra,short& len,short point_pos);
+
 };
-int Analysis::GetPointPos(char* value,short &pos)
+int Analysis::GetPointPos(char* value,short &pos,short len)
 {
-    for(short i = 0 ;i < 6;i++ )
+    for(short i = 0 ;i < len;i++ )
     {
         if(value[i]=='.')
         {
@@ -44,12 +48,30 @@ int Analysis::GetPointPos(char* value,short &pos)
             return 0;
         } 
     }
+    return -1;
 }
 
 int Analysis::GetPowerDec(short dec,short power,short &result)
 {
     result = dec*power;
     return 0;
+}
+//如果返回值为0 代表无需删除末尾0
+//若果返回值为1 代表需要删除末尾0
+int Analysis::TailZeroDelOrNot(char *value,short len)
+{
+    short pos;
+    if(GetPointPos(value,pos,len)!=0)
+    {
+        return 0;
+    }
+    else if(pos < len)
+    {
+        if(value[len-1] == 0)
+        {
+            return 1;
+        }
+    }
 }
 
 int Formater::Coverse(char *opra,short len)
@@ -65,22 +87,25 @@ int Formater::Coverse(char *opra,short len)
     return 0;
 }
 //添加小数点
-int Formater::AddPoint(char *opra,short len,short point_pos)
+int Formater::AddPoint(char *opra,short& len,short point_pos)
 {
-    char tmp[126];
-    memset(tmp,0,126);
-    opra[point_pos] = 10;
-    for(short i = 0;;i++)
+    if(len <= point_pos)
     {
-        
+        len = point_pos;
+        opra[point_pos] = '.' - '0';
+    }
+    else
+    {
+        char tmp[126];
+        memset(tmp,0,126);
+        tmp[point_pos] = '.' - '0';
+        memcpy(tmp,opra,point_pos);
+        memcpy(tmp + point_pos + 1,opra + point_pos,len - point_pos);
+        len = len + 1;
     }
     return 0;
 }
-//dec 小数点的位数
-int Formater::Format(char *input,short len,short dec,char *output)
-{ 
-    return 0;
-}
+
 
 
 //删除尾部的0
@@ -134,6 +159,7 @@ int Addition::AppendZero(char *input,short len,short num)
     memcpy(input,tmp,len+num);
     return 0;
 }
+
 int Multiplication::NumMultiplyNum(char *first,char *second,char *result,short first_len,short second_len,short &result_len)
 {
     char sum[126];
@@ -202,7 +228,7 @@ int Addition::NumPlusNum(char *first,char *second,char *result,const short fir_l
 
 int main(void)
 {
-#if 1
+#if 0
     Multiplication multitor;
     char a1[126],a2[126],result[126];
     a1[0] = 1;
@@ -224,20 +250,45 @@ int main(void)
     for(int t = 0;t < 19;t++)
     {
         multitor.NumMultiplyNum(a1,a2,result,a1_len,a2_len,result_len);
-	memcpy(a2,result,result_len);
-	a2_len = result_len;
+        memcpy(a2,result,result_len);
+        a2_len = result_len;
     }
     printf("result.len:%d\n",result_len);
     printf("result:\n");
     for(int i = 0;i < result_len;i++)
     {   
-	printf("%d ",result[i]);
+        printf("%d ",result[i]);
     }
     printf("\n");
 #endif
+#if 1
+    char tmp[126];
+    short pos,result;
+    memset(tmp,0,126);
+    memset(tmp+15,'.',1);
+    Analysis ansis;
+    ansis.GetPointPos(tmp,pos,126);
+    printf("pos is :%d\n",pos);
+    
+    ansis.GetPowerDec(10,20,result);//幂运算之后的小数位置
+    printf("result:%d\n",result);
+
+    char tmp1[126];
+    memset(tmp1,0,126);
+    memset(tmp1+15,'.'-'0',1);
+    memset(tmp1+16,5,1);
+
+#if 1
+    for(short i = 0;i < 10 ; i++)
+    {
+        printf("%s",tmp1[i]+'0');
+    }
+    printf("\n");
+#endif
+    cout<<"DelOrNot:"<<ansis.TailZeroDelOrNot(tmp1,20)<<endl;//判断是否需要删除末尾0
 
     return 0;
-
+#endif
 }
 
 

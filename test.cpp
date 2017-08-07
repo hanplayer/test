@@ -35,6 +35,8 @@ public:
     int DelEndZero(char *opra,short &len);//删除结尾的0
     int Coverse(char *opra,short len);//转换数据的前后顺序
     int AddPoint(char *opra,short& len,short point_pos);//添加小数点
+    int DelPoint(char *input,char *output);//输入值char[7]输出char[126];
+    int GetNum(char*oper);//格式化成数字形式
 };
 
 int Analysis::GetPos(char* value,short &pos,short len,char input)
@@ -121,6 +123,29 @@ int Formater::DelEndZero(char *opra,short &len)
     }
 }
 
+int Formater::GetNum(char *input,char *output)
+{
+    char flag = 1;
+    memset(output,0,126);
+    for(short i = 0; i < 7;i++)
+    {
+        if(input[i]=='.')
+        {
+            flag = 0;
+            continue;
+        }
+
+        if( flag == 1 )
+        {
+            output[i] = input[i];
+        }
+        else
+        {
+            output[i-1] = input[i];
+        }
+    }
+    return 0;
+}
 int Multiplication::BitMultiplyBit(const char& first,const char& second,char& bit,char& carry)
 {
     char num;
@@ -322,7 +347,7 @@ int main(void)
     }
     printf("\n");
 #endif
-#if 1
+#if 0
     char tmp1[126];
     memset(tmp1,0,126);
  
@@ -335,6 +360,17 @@ int main(void)
         printf("%c ",tmp1[i] + '0');
     }
     printf("\n");
+#endif
+#if 1
+    char tmp[7]={'1','2','4','.','6','7','9'};
+    char result[126];
+    Formater formater;
+    formater.GetNum(tmp,result);
+    for(short i = 0;i < 8 ; i++)
+    {
+        printf("%c ",result[i] );
+    }
+    printf("\n");   
 #endif
 }
 

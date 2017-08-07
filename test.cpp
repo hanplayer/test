@@ -36,7 +36,7 @@ public:
     int Coverse(char *opra,short len);//转换数据的前后顺序
     int AddPoint(char *opra,short& len,short point_pos);//添加小数点
     int DelPoint(char *input,char *output);//输入值char[7]输出char[126];
-    int GetNum(char*oper);//格式化成数字形式
+    int GetNum(char*oper,short len);//格式化成数字形式
 };
 
 int Analysis::GetPos(char* value,short &pos,short len,char input)
@@ -123,7 +123,7 @@ int Formater::DelEndZero(char *opra,short &len)
     }
 }
 
-int Formater::GetNum(char *input,char *output)
+int Formater::DelPoint(char *input,char *output)
 {
     char flag = 1;
     memset(output,0,126);
@@ -143,6 +143,14 @@ int Formater::GetNum(char *input,char *output)
         {
             output[i-1] = input[i];
         }
+    }
+    return 0;
+}
+int Formater::GetNum(char *oper,short len)
+{
+    for(short i = 0; i < len ; i++)
+    {
+        oper[i] = oper[i] + '0';
     }
     return 0;
 }
@@ -362,10 +370,11 @@ int main(void)
     printf("\n");
 #endif
 #if 1
-    char tmp[7]={'1','2','4','.','6','7','9'};
+    char tmp[7]={1,2,3,'.',3,7,5};
     char result[126];
     Formater formater;
-    formater.GetNum(tmp,result);
+    formater.DelPoint(tmp,result);
+    formater.GetNum(result,6);
     for(short i = 0;i < 8 ; i++)
     {
         printf("%c ",result[i] );

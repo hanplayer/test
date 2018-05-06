@@ -63,3 +63,60 @@ void *thread2(void *arg)
 
 
 
+
+#if 0
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+/* Data structure for read-write lock variable handling.  The
+   structure of the attribute type is not exposed on purpose.  */
+typedef union
+{
+# ifdef __x86_64__
+  struct
+  {
+    int __lock;
+    unsigned int __nr_readers;
+    unsigned int __readers_wakeup;
+    unsigned int __writer_wakeup;
+    unsigned int __nr_readers_queued;
+    unsigned int __nr_writers_queued;
+    int __writer;
+    int __shared;
+    unsigned long int __pad1;
+    unsigned long int __pad2;
+    /* FLAGS must stay at this position in the structure to maintain
+       binary compatibility.  */
+    unsigned int __flags;
+# define __PTHREAD_RWLOCK_INT_FLAGS_SHARED	1
+  } __data;
+# else
+  struct
+  {
+    int __lock;
+    unsigned int __nr_readers;
+    unsigned int __readers_wakeup;
+    unsigned int __writer_wakeup;
+    unsigned int __nr_readers_queued;
+    unsigned int __nr_writers_queued;
+    /* FLAGS must stay at this position in the structure to maintain
+       binary compatibility.  */
+    unsigned char __flags;
+    unsigned char __shared;
+    unsigned char __pad1;
+    unsigned char __pad2;
+    int __writer;
+  } __data;
+# endif
+  char __size[__SIZEOF_PTHREAD_RWLOCK_T];
+  long int __align;
+} pthread_rwlock_t;
+
+
+
+gdb调试过程中理解到
+由上面可知
+__writer记录当前写者pthread_id
+__nr_readers记录当前读者数量
+_nr_writers_queued 写者等待的数量
+__nr_readers_queued读者等待的数量
+#endif
+
